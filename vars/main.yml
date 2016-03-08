@@ -1,0 +1,9 @@
+---
+
+ssl_certificates:
+#  - domain: foo.com
+#  - domain: bar.com
+#    san:
+#      - bar.com
+#      - www.bar.com
+

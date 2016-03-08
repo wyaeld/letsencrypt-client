@@ -1,0 +1,41 @@
+---
+
+- name: Copy acme-tiny client
+  copy: >
+    src=acme_tiny.py
+    dest=/usr/local/bin/
+    owner=root
+    group=root
+    mode=0755
+
+- name: Copy letsencrypt-auto-renew in cron.daily
+  copy: >
+    src=letsencrypt-auto-renew.sh
+    dest=/etc/cron.daily/letsencrypt-auto-renew
+    owner=root
+    group=root
+    mode=0755
+
+- name: Create letsencrypt config dir
+  file: >
+    path=/etc/letsencrypt
+    state=directory
+    owner=root
+    group=ssl-cert
+    mode=0750
+
+- name: Generate letsencrypt client key (going to take some time)
+  command: > 
+    openssl genrsa -out /etc/letsencrypt/letsencrypt.key 4096
+    creates=/etc/letsencrypt/letsencrypt.key
+
+- name: Create acme-challenges dir
+  file: >
+    path=/srv/www/acme-challenges
+    state=directory
+    owner=root
+    group=ssl-cert
+    mode=0755
+
+- include: certificate.yml
+  with_items: ssl_certificates

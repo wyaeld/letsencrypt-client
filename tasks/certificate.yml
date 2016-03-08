@@ -1,0 +1,30 @@
+---
+
+- name: Create certificate directory
+  file: >
+    path=/etc/letsencrypt/{{ item.domain }}
+    state=directory
+    owner=root
+    group=ssl-cert
+    mode=0755
+
+- name: Generate certificate key
+  command: > 
+    openssl genrsa -out /etc/letsencrypt/{{ item.domain }}/{{ item.domain }}.key 4096
+    creates=/etc/letsencrypt/{{ item.domain }}/{{ item.domain }}.key
+
+#- debug: msg="openssl req -new -sha256 -key /etc/letsencrypt/{{ item.domain }}/{{ item.domain }}.key -subj "/" -reqexts SAN <(cat /etc/ssl/openssl.cnf <(printf \"[SAN]\nsubjectAltName=DNS:{{ item.san | join(',DNS:') }}\")) -out /etc/letsencrypt/{{ item.domain }}/{{ item.domain }}.csr"
+
+- name: Generate certificate csr (with san)
+  shell: > 
+    openssl req -new -sha256 -key /etc/letsencrypt/{{ item.domain }}/{{ item.domain }}.key -subj "/" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName=DNS:{{ item.san | join(',DNS:') }}")) -out /etc/letsencrypt/{{ item.domain }}/{{ item.domain }}.csr
+    executable=/bin/bash
+    creates=/etc/letsencrypt/{{ item.domain }}/{{ item.domain }}.csr
+  when: (item.san is defined and item.san)
+
+- name: Generate certificate csr (without san)
+  command: > 
+    openssl req -new -sha256 -key /etc/letsencrypt/{{ item.domain }}/{{ item.domain }}.key -subj "/CN={{ item.domain }}" -out /etc/letsencrypt/{{ item.domain }}/{{ item.domain }}.csr
+    creates=/etc/letsencrypt/{{ item.domain }}/{{ item.domain }}.csr
+
+#openssl req -new -sha256 -key domain.key -subj "/" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName=DNS:yoursite.com,DNS:www.yoursite.com")) > domain.csr
