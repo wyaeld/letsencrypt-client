@@ -1,5 +1,17 @@
 ---
 
+admin_email: root@sysnove.fr
+acme_bin: /usr/local/bin/acme_tiny.py
+acme_challenges_dir: /srv/www/acme-challenges
+letsencrypt_config_dir: /etc/letsencrypt
+letsencrypt_account_key: letsencrypt.key
+letsencrypt_intermediate: intermediate.pem
+
+services:
+  - dovecot
+  - nginx
+  - apache2
+
 ssl_certificates:
 #  - domain: foo.com
 #  - domain: bar.com

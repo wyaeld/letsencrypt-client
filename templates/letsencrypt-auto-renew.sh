@@ -16,14 +16,14 @@
 # as published by Sam Hocevar. See the http://www.wtfpl.net/ file for more details.
 #
 
+ADMIN_EMAIL={{ admin_email }}
+ACME_BIN={{ acme_bin }}
+ACME_CHALLENGES_DIR={{ acme_challenges_dir }}
+CONFIG_DIR={{ letsencrypt_config_dir }}
+ACCOUNT_KEY=$CONFIG_DIR/{{ letsencrypt_account_key }}
+INTERMEDIATE=$CONFIG_DIR/{{ letsencrypt_intermediate }}
 
-ADMIN_EMAIL=root@sysnove.fr 
-ACME_BIN=/usr/local/bin/acme_tiny.py
-CONFIG_DIR=/etc/letsencrypt
-ACCOUNT_KEY=$CONFIG_DIR/letsencrypt.key
-INTERMEDIATE=$CONFIG_DIR/intermediate.pem
-
-SERVICES="dovecot nginx apache2"
+SERVICES="{{ services|join(' ') }}"
 
 reload_services=0
 
@@ -38,7 +38,7 @@ for domain in * ; do
         crt=$domain/$domain.crt
         csr=$domain/$domain.csr
 
-        acme_dir=/srv/www/acme-challenges
+        acme_dir=$ACME_CHALLENGES_DIR
         if [ ! -d $acme_dir ] ; then
             mkdir -p $acme_dir
         fi
