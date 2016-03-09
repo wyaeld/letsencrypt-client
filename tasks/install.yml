@@ -9,7 +9,7 @@
     mode=0755
 
 - name: Copy letsencrypt-auto-renew in cron.daily
-  copy: >
+  template: >
     src=letsencrypt-auto-renew.sh
     dest=/etc/cron.daily/letsencrypt-auto-renew
     owner=root
